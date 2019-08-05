@@ -155,6 +155,10 @@
 			<summary>Attach modal dialogs</summary>
 			<description>When true, instead of having independent titlebars, modal dialogs appear attached to the titlebar of the parent window and are moved together with the parent window.</description>
 		</key>
+        <key type="b" name="greyscale">
+            <default>false</default>
+            <summary>If the display should be greyscale</summary>
+        </key>
 		<key type="s" name="button-layout">
 			<default>'close:maximize'</default>
 			<summary>Arrangement of buttons on the titlebar</summary>

@@ -70,7 +70,9 @@ namespace Gala
 		Clutter.Actor? last_hotcorner;
 		ScreenSaver? screensaver;
 
-		Clutter.Actor? tile_preview;
+        Clutter.Actor? tile_preview;
+        
+        Clutter.ShaderEffect? greyscale_effect;
 
 		Window? moving; //place for the window that is being moved over
 
@@ -310,7 +312,9 @@ namespace Gala
 
 			update_input_area ();
 
-			stage.show ();
+            stage.show ();
+            toggle_greyscale ();
+            AppearanceSettings.get_default ().notify["greyscale"].connect (toggle_greyscale);
 
 			// let the session manager move to the next phase
 			Meta.register_with_session ();
@@ -322,6 +326,33 @@ namespace Gala
 
 			return false;
 		}
+
+        void toggle_greyscale ()
+        {
+            if (greyscale_effect == null) {
+                greyscale_effect = new Clutter.ShaderEffect (Clutter.ShaderType.FRAGMENT_SHADER);
+                greyscale_effect.set_name ("greyscale");
+                greyscale_effect.set_shader_source ("""
+                    uniform sampler2D texture;
+                    void main () {
+                        vec4 color = texture2D (texture, cogl_tex_coord0_in.xy);
+                        float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+                        cogl_color_out = vec4(vec3(gray), 1.0);
+                    }
+                """);
+                greyscale_effect.set_uniform_value ("texture", 0);
+            }
+
+            if (AppearanceSettings.get_default ().greyscale) {
+                if (ui_group.get_effect ("greyscale") == null) {
+                    ui_group.add_effect (greyscale_effect);
+                }
+            } else {
+                if (ui_group.get_effect ("greyscale") != null) {
+                    ui_group.remove_effect (greyscale_effect);
+                }
+            }
+        }
 
 		void configure_hotcorners ()
 		{
