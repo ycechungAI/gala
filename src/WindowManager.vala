@@ -72,7 +72,7 @@ namespace Gala
 
         Clutter.Actor? tile_preview;
         
-        Clutter.ShaderEffect? greyscale_effect;
+        Clutter.DesaturateEffect? greyscale_effect;
 
 		Window? moving; //place for the window that is being moved over
 
@@ -327,50 +327,37 @@ namespace Gala
 			return false;
 		}
 
-        float greyscale_opacity = 0.0f;
         uint fade_in_id = 0U;
         uint fade_out_id = 0U;
         void toggle_greyscale ()
         {
             if (greyscale_effect == null) {
-                greyscale_effect = new Clutter.ShaderEffect (Clutter.ShaderType.FRAGMENT_SHADER);
+                greyscale_effect = new Clutter.DesaturateEffect (0.0f);
                 greyscale_effect.set_name ("greyscale");
-                greyscale_effect.set_shader_source ("""
-                    uniform sampler2D texture;
-                    uniform float opacity;
-
-                    void main () {
-                        vec4 color = texture2D (texture, cogl_tex_coord0_in.xy);
-                        float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-                        cogl_color_out = mix (color, vec4(vec3(gray), 1.0), opacity);
-                    }
-                """);
-
-                greyscale_effect.set_uniform_value ("texture", 0);
-                greyscale_effect.set_uniform_value ("opacity", 0.0f);
             }
 
             const uint FADE_TIMEOUT = 300 / 100;
             if (AppearanceSettings.get_default ().greyscale) {
                 bool animates_out = fade_out_id > 0U;
-                if (ui_group.get_effect ("greyscale") == null || animates_out) {
+                if (ui_group.get_effect ("greyscale") == null) {
                     ui_group.add_effect (greyscale_effect);
-                    if (animates_out) {
-                        Source.remove (fade_out_id);
+                }
+
+                if (animates_out) {
+                    Source.remove (fade_out_id);
+                }
+
+                fade_in_id = Timeout.add (FADE_TIMEOUT, () => {
+                    bool stop = greyscale_effect.factor >= 1.0f;
+                    if (stop) {
+                        fade_in_id = 0U;
+                    } else {
+                        greyscale_effect.factor = double.min (greyscale_effect.factor + 0.01, 1.0);
                     }
 
-                    fade_in_id = Timeout.add (FADE_TIMEOUT, () => {
-                        greyscale_effect.set_uniform_value ("opacity", greyscale_opacity);
-                        greyscale_opacity += 0.01f;
-
-                        bool stop = greyscale_opacity > 1.0f;
-                        if (stop) {
-                            fade_in_id = 0U;
-                        }
-
-                        return !stop;
-                    });
-                }
+                    print (greyscale_effect.factor.to_string () + "\n");
+                    return !stop;
+                });
             } else {
                 if (ui_group.get_effect ("greyscale") != null) {
                     if (fade_in_id > 0U) {
@@ -378,15 +365,15 @@ namespace Gala
                     }
 
                     fade_out_id = Timeout.add (FADE_TIMEOUT, () => {
-                        greyscale_opacity -= 0.01f;
-                        greyscale_effect.set_uniform_value ("opacity", greyscale_opacity);
-
-                        bool stop = greyscale_opacity <= 0.0f;
+                        bool stop = greyscale_effect.factor <= 0.0f;
                         if (stop) {
                             ui_group.remove_effect (greyscale_effect);
                             fade_out_id = 0U;
+                        } else {
+                            greyscale_effect.factor = double.max (greyscale_effect.factor - 0.01, 0);
                         }
 
+                        print (greyscale_effect.factor.to_string () + "\n");
                         return !stop;
                     });
                 }
