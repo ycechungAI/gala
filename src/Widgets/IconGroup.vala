@@ -545,7 +545,7 @@ namespace Gala
 				get_parent ().remove_child (this);
 	
 				unowned WorkspaceInsertThumb inserter = (WorkspaceInsertThumb) destination;
-				//  workspace.get_screen ().reorder_workspace (workspace, inserter.workspace_index);
+				workspace.get_screen ().reorder_workspace (workspace, inserter.workspace_index);
 
 				restore_group ();
 			} else {
