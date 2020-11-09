@@ -50,8 +50,6 @@ namespace Gala {
         GLib.Environment.unset_variable ("NO_GAIL");
         GLib.Environment.unset_variable ("NO_AT_BRIDGE");
 
-        Plank.Paths.initialize ("plank", Config.DATADIR + "/plank");
-
         // Force initialization of static fields in Utils class
         // https://bugzilla.gnome.org/show_bug.cgi?id=543189
         typeof (Gala.Utils).class_ref ();

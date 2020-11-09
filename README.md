@@ -19,7 +19,6 @@ You'll need the following dependencies:
 * libgranite-dev (>= 5.4.0)
 * libgtk-3-dev (>= 3.4.0)
 * libmutter-0-dev (>= 3.23.90) | libmutter-dev (>= 3.14.4)
-* libplank-dev (>= 0.10.9)
 * libxml2-utils
 * valac (>= 0.28.0)
 
