@@ -280,9 +280,10 @@ namespace Gala {
 
             actor.hide ();
 
-            var clone = new SafeWindowClone (window, true);
-            clone.x = actor.x;
-            clone.y = actor.y;
+            var clone = new SafeWindowClone (window, true) {
+                x = actor.x,
+                y = actor.y
+            };
 
             window_clones.add_child (clone);
         }

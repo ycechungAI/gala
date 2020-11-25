@@ -1,7 +1,6 @@
 gala_bin_sources = files(
     'DBus.vala',
     'DBusAccelerator.vala',
-    'DragDropAction.vala',
     'InternalUtils.vala',
     'KeyboardManager.vala',
     'NotificationStack.vala',
