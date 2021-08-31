@@ -1,4 +1,6 @@
 gala_bin_sources = files(
+    'App.vala',
+    'AppSystem.vala',
     'DBus.vala',
     'DBusAccelerator.vala',
     'DockThemeManager.vala',
@@ -15,6 +17,7 @@ gala_bin_sources = files(
     'ShadowEffect.vala',
     'WindowListener.vala',
     'WindowManager.vala',
+    'WindowTracker.vala',
     'WorkspaceManager.vala',
     'Zoom.vala',
     'AccentColor/AccentColorManager.vala',
